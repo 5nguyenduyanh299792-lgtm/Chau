@@ -1,0 +1,5 @@
+{
+  "name": "Sổ Tiền Trọ",
+  "description": "Ghi chép chi phí phòng trọ hằng tháng: tiền trọ, điện, nước, khoản khác. Lưu dữ liệu trên trình duyệt.",
+  "requestFramePermissions": []
+}
