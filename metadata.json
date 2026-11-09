@@ -1,5 +1,5 @@
 {
   "name": "Sổ Tiền Trọ",
-  "description": "Ghi chép chi phí phòng trọ hằng tháng: tiền trọ, điện, nước, khoản khác. Lưu dữ liệu trên trình duyệt.",
-  "requestFramePermissions": []
+  "description": "Ghi chép và đồng bộ chi phí phòng trọ hằng tháng: tiền trọ, điện, nước và các khoản khác qua Firestore, hỗ trợ AI tự động điền chi phí bằng giọng nói",
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

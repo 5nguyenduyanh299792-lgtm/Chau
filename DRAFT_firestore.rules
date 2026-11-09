@@ -1,0 +1,97 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. Global primitives & helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 3. Entity Validation Helpers
+    function isValidRecord(data, userId, recordId) {
+      return data.userId == userId
+        && data.userId == request.auth.uid
+        && data.month == recordId
+        && data.month is string
+        && data.month.size() == 7
+        && data.month.matches('^[0-9]{4}-[0-9]{2}$')
+        && data.rent is number && data.rent >= 0
+        && data.electric is number && data.electric >= 0
+        && data.water is number && data.water >= 0
+        && data.others is list && data.others.size() <= 30
+        && data.people is number && data.people >= 1 && data.people <= 20
+        && data.paid is bool
+        && (!('paidDate' in data) || (data.paidDate is string && data.paidDate.size() <= 10))
+        && (!('note' in data) || (data.note is string && data.note.size() <= 500))
+        && (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50))
+        && (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50))
+        && data.keys().hasAll(['month', 'rent', 'electric', 'water', 'others', 'people', 'paid', 'userId'])
+        && data.keys().hasOnly(['month', 'rent', 'electric', 'water', 'elecMeter', 'waterMeter', 'others', 'note', 'people', 'paid', 'paidDate', 'userId', 'createdAt', 'updatedAt']);
+    }
+
+    function isValidSettings(data, userId) {
+      return data.userId == userId
+        && data.userId == request.auth.uid
+        && data.dueDay is number && data.dueDay >= 1 && data.dueDay <= 31
+        && data.people is number && data.people >= 1 && data.people <= 20
+        && (!('theme' in data) || data.theme in ['auto', 'light', 'dark'])
+        && (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50))
+        && data.keys().hasAll(['dueDay', 'people', 'userId'])
+        && data.keys().hasOnly(['dueDay', 'people', 'userId', 'theme', 'updatedAt']);
+    }
+
+    // 4. Test connection path
+    match /test/{docId} {
+      allow get: if true;
+    }
+
+    // 5. User-isolated data
+    match /users/{userId} {
+      match /records/{recordId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && isValidId(recordId)
+          && isValidRecord(incoming(), userId, recordId);
+        allow update: if isOwner(userId)
+          && isValidId(recordId)
+          && isValidRecord(incoming(), userId, recordId)
+          && incoming().userId == existing().userId
+          && (!('createdAt' in existing()) || incoming().createdAt == existing().createdAt);
+        allow delete: if isOwner(userId) && isValidId(recordId);
+      }
+
+      match /settings/{settingId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && isValidId(settingId)
+          && isValidSettings(incoming(), userId);
+        allow update: if isOwner(userId)
+          && isValidId(settingId)
+          && isValidSettings(incoming(), userId)
+          && incoming().userId == existing().userId;
+        allow delete: if isOwner(userId) && isValidId(settingId);
+      }
+    }
+  }
+}

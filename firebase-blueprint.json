@@ -1,0 +1,127 @@
+{
+  "entities": {
+    "Record": {
+      "title": "Record",
+      "description": "Chi phí phòng trọ một tháng",
+      "type": "object",
+      "properties": {
+        "month": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}$",
+          "description": "Tháng dạng YYYY-MM"
+        },
+        "rent": {
+          "type": "number",
+          "description": "Tiền trọ"
+        },
+        "electric": {
+          "type": "number",
+          "description": "Tiền điện"
+        },
+        "water": {
+          "type": "number",
+          "description": "Tiền nước"
+        },
+        "elecMeter": {
+          "type": "object",
+          "description": "Chỉ số công tơ điện"
+        },
+        "waterMeter": {
+          "type": "object",
+          "description": "Chỉ số đồng hồ nước"
+        },
+        "others": {
+          "type": "array",
+          "description": "Các khoản phát sinh khác"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Ghi chú tháng"
+        },
+        "people": {
+          "type": "number",
+          "description": "Số người ở trọ"
+        },
+        "paid": {
+          "type": "boolean",
+          "description": "Trạng thái đã đóng tiền"
+        },
+        "paidDate": {
+          "type": "string",
+          "maxLength": 10,
+          "description": "Ngày đóng tiền YYYY-MM-DD"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "ID người dùng sở hữu bản ghi"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Thời điểm tạo bản ghi"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Thời điểm cập nhật bản ghi"
+        }
+      },
+      "required": ["month", "rent", "electric", "water", "others", "people", "paid", "userId"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Cấu hình sổ tiền trọ của người dùng",
+      "type": "object",
+      "properties": {
+        "theme": {
+          "type": "string",
+          "enum": ["auto", "light", "dark"],
+          "description": "Giao diện sáng / tối / tự động"
+        },
+        "dueDay": {
+          "type": "number",
+          "description": "Ngày hạn đóng tiền hằng tháng (1-31)"
+        },
+        "people": {
+          "type": "number",
+          "description": "Số người ở trọ mặc định"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "ID người dùng sở hữu cài đặt"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Thời điểm cập nhật cấu hình"
+        }
+      },
+      "required": ["dueDay", "people", "userId"]
+    },
+    "TestConnection": {
+      "title": "TestConnection",
+      "description": "Tài liệu kiểm tra kết nối Firestore",
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "description": "Trạng thái kết nối"
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}/records/{recordId}": {
+      "schema": "Record",
+      "description": "Tập hợp các tháng chi phí của từng người dùng"
+    },
+    "/users/{userId}/settings/{settingId}": {
+      "schema": "Settings",
+      "description": "Cài đặt sổ trọ của người dùng"
+    },
+    "/test/{docId}": {
+      "schema": "TestConnection",
+      "description": "Kiểm tra kết nối Firestore"
+    }
+  }
+}
