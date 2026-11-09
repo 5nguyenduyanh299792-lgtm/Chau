@@ -36,13 +36,3 @@ Chỉ có **1 file `index.html`** (HTML + CSS + JavaScript thuần), không cầ
 **Lịch sử & dữ liệu**: danh sách các tháng, lọc theo năm và trạng thái; xuất CSV (mở bằng Excel) và JSON; nhập lại từ JSON (gộp hoặc thay thế); xoá toàn bộ dữ liệu có hộp xác nhận.
 
 **Giao diện**: tiếng Việt, ưu tiên điện thoại, đẹp trên máy tính (thanh điều hướng chuyển sang cột bên trái), chế độ Sáng / Tối / Tự động, tiền định dạng kiểu Việt Nam `1.250.000 đ`.
-
-## Chạy bằng Node / Google AI Studio
-
-Repo có sẵn `package.json` (Vite) để chạy trên các nền tảng cần dev server như Google AI Studio:
-
-```bash
-npm install
-npm run dev     # http://localhost:3000
-npm run build   # xuất ra thư mục dist/
-```
